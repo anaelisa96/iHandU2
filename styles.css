@@ -10,3 +10,20 @@
   color: blue;
 }
 
+.container{
+  display:flex;
+}
+
+.accValues{
+  flex:2;
+  text-align: center;
+  
+  margin: 10px;
+}
+.gyroValues{
+  flex:2;
+  text-align: center;
+  
+  margin-top: 10px;
+  margin-bottom:10px;
+}

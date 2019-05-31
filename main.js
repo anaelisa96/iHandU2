@@ -24,7 +24,7 @@ for (i = 0; i < secondsToShow*fs-1; i++){
 console.log(xlabel)
 
 
-var ctx = document.getElementById('myChart').getContext('2d');
+var ctx = document.getElementById('accChart').getContext('2d');
 var myLineChart = new Chart(ctx, {
   type: 'line',
   data: {
@@ -73,6 +73,61 @@ var myLineChart = new Chart(ctx, {
             min: -2,    // minimum will be 0, unless there is a lower value.
             // OR //
             max: 2   // minimum value will be 0.
+          }
+      }]
+    }
+  }
+});
+
+var cgyrox = document.getElementById('gyroChart').getContext('2d');
+var myGyroChart = new Chart(cgyrox, {
+  type: 'line',
+  data: {
+    labels: xlabel,
+    datasets: [{ 
+        label: 'x axis',
+        data: arr,
+        borderColor: "#3e95cd",
+        fill: false,
+      },
+      {
+        label: 'y axis',
+        data:arr1,
+        borderColor: "#ef0d09",
+        fill: false
+      },
+      {
+        label: 'z axis',
+        data:arr2,
+        borderColor: "#167a09",
+        fill: false
+      }
+    ]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Gyroscope'
+    },
+    elements: {
+      point:{
+          radius: 0
+      }
+    },
+    scales: {
+      xAxes: [{
+          gridLines: {
+              display:false
+          }
+      }],
+      yAxes: [{
+          gridLines: {
+              display:false
+          },
+          ticks: {
+            min: -500,    // minimum will be 0, unless there is a lower value.
+            // OR //
+            max: 500   // minimum value will be 0.
           }
       }]
     }
@@ -171,7 +226,9 @@ function connectDeviceAndCacheCharacteristic(device) {
         characteristicCache = characteristic;
 
         return characteristicCache;
-      });
+      }).
+      then(characteristic => {
+        startNotifications(characteristic)});
 }
 
 
@@ -256,7 +313,6 @@ function connect() {
   return (deviceCache ? Promise.resolve(deviceCache) :
     requestBluetoothDevice()).
     then(device => connectDeviceAndCacheCharacteristic(device)).
-    then(characteristic => startNotifications(characteristic)).
     catch(error => log(error));
 }
 
