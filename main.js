@@ -6,6 +6,9 @@ let xlabel=[];
 let TimeStart=Date.now();
 let TimeEnd=Date.now();
 (arr = []).length = secondsToShow*fs-1; arr.fill(0);
+(arr1 = []).length = secondsToShow*fs-1; arr1.fill(0);
+(arr2 = []).length = secondsToShow*fs-1; arr2.fill(0);
+
 console.log(arr)
 
 j=0
@@ -27,17 +30,20 @@ var myLineChart = new Chart(ctx, {
   data: {
     labels: xlabel,
     datasets: [{ 
+        label: 'x axis',
         data: arr,
         borderColor: "#3e95cd",
         fill: false,
       },
       {
-        data:arr,
+        label: 'y axis',
+        data:arr1,
         borderColor: "#ef0d09",
         fill: false
       },
       {
-        data:arr,
+        label: 'z axis',
+        data:arr2,
         borderColor: "#167a09",
         fill: false
       }
@@ -46,7 +52,7 @@ var myLineChart = new Chart(ctx, {
   options: {
     title: {
       display: true,
-      text: 'ECG'
+      text: 'Accelerometer'
     },
     elements: {
       point:{
@@ -62,7 +68,12 @@ var myLineChart = new Chart(ctx, {
       yAxes: [{
           gridLines: {
               display:false
-          }   
+          },
+          ticks: {
+            min: -2,    // minimum will be 0, unless there is a lower value.
+            // OR //
+            max: 2   // minimum value will be 0.
+          }
       }]
     }
   }
@@ -190,22 +201,20 @@ function handleCharacteristicValueChanged(event) {
   console.log(value)
   x=value.getFloat32(0,true)
   console.log(x)
-  myLineChart.data.datasets[0].shift()
+  myLineChart.data.datasets[0].data.shift()
   myLineChart.data.datasets[0].data.push(x)
 
   y=value.getFloat32(4,true)
   console.log(y)
-  myLineChart.data.datasets[1].shift()
+  myLineChart.data.datasets[1].data.shift()
   myLineChart.data.datasets[1].data.push(y)
 
   z=value.getFloat32(8,true)
   console.log(z)
-  myLineChart.data.datasets[2].shift()
+  myLineChart.data.datasets[2].data.shift()
   myLineChart.data.datasets[2].data.push(z)
   myLineChart.update()
 
-
-  console.log(value.getFloat32(8,true))
   samples+=1;
   // Convert raw data bytes to hex values just for the sake of showing something.
   // In the "real" world, you'd use data.getUint8, data.getUint16 or even
