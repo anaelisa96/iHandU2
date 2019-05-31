@@ -1,7 +1,10 @@
 //CHART AREA
 let secondsToShow=10;
-let fs=250;
+let fs=8;
 let xlabel=[];
+
+let TimeStart=Date.now();
+let TimeEnd=Date.now();
 (arr = []).length = secondsToShow*fs-1; arr.fill(0);
 console.log(arr)
 
@@ -27,6 +30,16 @@ var myLineChart = new Chart(ctx, {
         data: arr,
         borderColor: "#3e95cd",
         fill: false,
+      },
+      {
+        data:arr,
+        borderColor: "#ef0d09",
+        fill: false
+      },
+      {
+        data:arr,
+        borderColor: "#167a09",
+        fill: false
       }
     ]
   },
@@ -93,7 +106,7 @@ function requestBluetoothDevice() {
   log('Requesting bluetooth device...');
 
   return navigator.bluetooth.requestDevice({
-    filters: [{services: ['d0eb25b2-2c58-4044-aa07-a81cf785b676']}],
+    filters: [{services: ['1a9a5e03-d184-4f89-bb23-e7861b06cd4f']}],
   }).
       then(device => {
         log('"' + device.name + '" bluetooth device selected');
@@ -135,12 +148,12 @@ function connectDeviceAndCacheCharacteristic(device) {
       then(server => {
         log('GATT server connected, getting service...');
 
-        return server.getPrimaryService('d0eb25b2-2c58-4044-aa07-a81cf785b676');
+        return server.getPrimaryService('1a9a5e03-d184-4f89-bb23-e7861b06cd4f');
       }).
       then(service => {
         log('Service found, getting characteristic...');
 
-        return service.getCharacteristic('82901d4a-edb2-4289-94ef-d3974c59347b');
+        return service.getCharacteristic('8621b83d-e1fd-46b0-b064-29d80a2c2b6d');
       }).
       then(characteristic => {
         log('Characteristic found');
@@ -164,14 +177,40 @@ function startNotifications(characteristic) {
             handleCharacteristicValueChanged);
       });
 }
-
+var hasStarted=false;
+var samples=0
 function handleCharacteristicValueChanged(event) {
+  if (!hasStarted){
+    console.log("STARTED")
+    TimeStart=Date.now()
+    hasStarted=true
+  }
   let value = event.target.value;
   let a = [];
+  console.log(value)
+  x=value.getFloat32(0,true)
+  console.log(x)
+  myLineChart.data.datasets[0].shift()
+  myLineChart.data.datasets[0].data.push(x)
+
+  y=value.getFloat32(4,true)
+  console.log(y)
+  myLineChart.data.datasets[1].shift()
+  myLineChart.data.datasets[1].data.push(y)
+
+  z=value.getFloat32(8,true)
+  console.log(z)
+  myLineChart.data.datasets[2].shift()
+  myLineChart.data.datasets[2].data.push(z)
+  myLineChart.update()
+
+
+  console.log(value.getFloat32(8,true))
+  samples+=1;
   // Convert raw data bytes to hex values just for the sake of showing something.
   // In the "real" world, you'd use data.getUint8, data.getUint16 or even
   // TextDecoder to process raw data bytes.
-  let tmp = '';
+/*   let tmp = '';
   let j=0
   for (let i = 0; i < value.byteLength; i++) {
     j+=1
@@ -182,14 +221,14 @@ function handleCharacteristicValueChanged(event) {
       tmp=''
       j=0
     }
-  }
-  log(a, 'in');
+  } */
+/*   log(a, 'in');
   arr = arr.slice(33, arr.length);
   arr.push(...a)
   myLineChart.data.datasets[0].data=myLineChart.data.datasets[0].data.slice(33, arr.length);
   myLineChart.data.datasets[0].data.push(...a)
   myLineChart.update()
-  console.log(myLineChart.data.datasets)
+  console.log(myLineChart.data.datasets) */
   //console.log(myLineChart.datasets[0].data)
   
   //console.log("cenas")
@@ -215,6 +254,10 @@ function connect() {
 // Disconnect from the connected device
 function disconnect() {
   //
+  TimeEnd=Date.now()
+  console.log(samples)
+  console.log(TimeEnd-TimeStart)
+  console.log(samples/(TimeEnd-TimeStart))
   if (deviceCache) {
     log('Disconnecting from "' + deviceCache.name + '" bluetooth device...');
     deviceCache.removeEventListener('gattserverdisconnected',
