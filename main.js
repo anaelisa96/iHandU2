@@ -219,23 +219,30 @@ function connectDeviceAndCacheCharacteristic(device) {
       then(service => {
         log('Service found, getting characteristic...');
 
-        return service.getCharacteristic('8621b83d-e1fd-46b0-b064-29d80a2c2b6d');
+        return service.getCharacteristics();
       }).
       then(characteristic => {
         log('Characteristic found');
+        console.log(characteristic)
         characteristicCache = characteristic;
 
         return characteristicCache;
       }).
       then(characteristic => {
-        startNotifications(characteristic)});
+        console.log(characteristic)
+        startNotificationsAcc(characteristic[1])
+        return characteristic[2];
+      }).then(characteristic=> {
+        console.log(characteristic)
+        startNotificationsGyro(characteristic)
+      });
 }
 
 
 
 // Enable the characteristic changes notification
-function startNotifications(characteristic) {
-  log('Starting notifications...');
+function startNotificationsAcc(characteristic) {
+  log('Starting notifications ACC...');
 
   return characteristic.startNotifications().
       then(() => {
@@ -243,6 +250,18 @@ function startNotifications(characteristic) {
 
         characteristic.addEventListener('characteristicvaluechanged',
             handleCharacteristicValueChanged);
+      });
+}
+
+function startNotificationsGyro(characteristic){
+  log('Starting notifications ACC...');
+
+  return characteristic.startNotifications().
+      then(() => {
+        log('Notifications started');
+
+        characteristic.addEventListener('characteristicvaluechanged',
+            handleCharacteristicValueChangedGyro);
       });
 }
 var hasStarted=false;
@@ -253,8 +272,8 @@ function handleCharacteristicValueChanged(event) {
     TimeStart=Date.now()
     hasStarted=true
   }
+
   let value = event.target.value;
-  let a = [];
   console.log(value)
   x=value.getFloat32(0,true)
   console.log(x)
@@ -300,6 +319,30 @@ function handleCharacteristicValueChanged(event) {
   //console.log("cenas")
   //console.log(a)
   //log(event.target.value)
+}
+
+function handleCharacteristicValueChangedGyro(event) {
+
+  console.log("LMAO")
+  console.log(event.target)
+
+  let value = event.target.value;
+  console.log(value)
+  x=value.getFloat32(0,true)
+  console.log(x)
+  myGyroChart.data.datasets[0].data.shift()
+  myGyroChart.data.datasets[0].data.push(x)
+
+  y=value.getFloat32(4,true)
+  console.log(y)
+  myGyroChart.data.datasets[1].data.shift()
+  myGyroChart.data.datasets[1].data.push(y)
+
+  z=value.getFloat32(8,true)
+  console.log(z)
+  myGyroChart.data.datasets[2].data.shift()
+  myGyroChart.data.datasets[2].data.push(z)
+  myGyroChart.update()
 }
 
 // Output to terminal
