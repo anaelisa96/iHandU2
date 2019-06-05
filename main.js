@@ -70,9 +70,9 @@ var myLineChart = new Chart(ctx, {
               display:false
           },
           ticks: {
-            min: -2,    // minimum will be 0, unless there is a lower value.
+            min: -5000,    // minimum will be 0, unless there is a lower value.
             // OR //
-            max: 2   // minimum value will be 0.
+            max: 5000   // minimum value will be 0.
           }
       }]
     }
