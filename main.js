@@ -1,6 +1,6 @@
 //CHART AREA
-let secondsToShow=6;
-let fs=12; //a minha fs devia ser 50hz Mmas se ponho aqui 50 fica muito lento
+let secondsToShow=10;
+let fs=12;
 let xlabel=[];
 
 let TimeStart=Date.now();
@@ -34,10 +34,10 @@ for (i = 0; i < secondsToShow*fs-1; i++){
     xlabel.push("")
   }
 }
-console.log('xlabel = ' + xlabel) //xlabel é um array com os índices das novas amostras??
+//console.log('xlabel = ' + xlabel) //xlabel é um array com os índices das novas amostras??
 
 
-var ctx = document.getElementById('accChart').getContext('2d'); //criar gráfico 2D? Necessário para trabalhar com o gráfico maybe
+var ctx = document.getElementById('accChart').getContext('2d');
 var myLineChart = new Chart(ctx, {
   type: 'line',
   data: {
@@ -83,9 +83,9 @@ var myLineChart = new Chart(ctx, {
               display:false
           },
           ticks: {
-            min: -2,    // minimum will be 0, unless there is a lower value.
+            min: -5,    // minimum will be 0, unless there is a lower value.
             // OR //
-            max: 2   // minimum value will be 0.
+            max: 5   // minimum value will be 0.
           }
       }]
     }
@@ -138,9 +138,9 @@ var myGyroChart = new Chart(cgyrox, {
               display:false
           },
           ticks: {
-            min: -500,    // minimum will be 0, unless there is a lower value.
+            min: -2000,    // minimum will be 0, unless there is a lower value.
             // OR //
-            max: 500   // minimum value will be 0.
+            max: 2000   // minimum value will be 0.
           }
       }]
     }
@@ -196,6 +196,61 @@ var myMagChart = new Chart(cmagx, {
             min: -5000,    // minimum will be 0, unless there is a lower value.
             // OR //
             max: 5000   // minimum value will be 0.
+          }
+      }]
+    }
+  }
+});
+
+var cforcex = document.getElementById('forceChart').getContext('2d');
+var myForceChart = new Chart(cforcex, {
+  type: 'line',
+  data: {
+    labels: xlabel,
+    datasets: [{ 
+        label: 'x axis',
+        data: arr6, //arr,
+        borderColor: "#3e95cd",
+        fill: false,
+      },
+      {
+        label: 'y axis',
+        data: arr7, //arr1,
+        borderColor: "#ef0d09",
+        fill: false
+      },
+      {
+        label: 'z axis',
+        data: arr8, //arr2,
+        borderColor: "#167a09",
+        fill: false
+      }
+    ]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Force'
+    },
+    elements: {
+      point:{
+          radius: 0
+      }
+    },
+    scales: {
+      xAxes: [{
+          gridLines: {
+              display:false
+          }
+      }],
+      yAxes: [{
+          gridLines: {
+              display:false
+          },
+          ticks: {
+            min: -3500,    // minimum will be 0, unless there is a lower value.
+            // OR //
+            max: 3500   // minimum value will be 0.
           }
       }]
     }
@@ -342,33 +397,33 @@ function handleCharacteristicValueChanged(event) {
   console.log(value)
   for (var i = 0 ; i < 4 ; i++){
 
-    x=value.getFloat32(0 + 12*i,true)
+    x=value.getFloat32(0 + 12*i, true)// + 12*i,true)
     console.log('x = '+ x)
     myLineChart.data.datasets[0].data.shift()
     myLineChart.data.datasets[0].data.push(x)
 
-    y=value.getFloat32(4 + 12*i,true)
+    y=value.getFloat32(4 + 12*i, true)// + 12*i,true)
     console.log('y = ' + y)
     myLineChart.data.datasets[1].data.shift()
     myLineChart.data.datasets[1].data.push(y)
 
-    z=value.getFloat32(8 + 12*i,true)
+    z=value.getFloat32(8 + 12*i, true)// + 12*i,true)
     console.log('z = ' + z)
     myLineChart.data.datasets[2].data.shift()
     myLineChart.data.datasets[2].data.push(z)
     myLineChart.update()
 
-    xg=value.getFloat32(48 + 12*i,true)
+    xg=value.getFloat32(48 + 12*i,true)//48//56
     console.log('xg = ' + xg)
     myGyroChart.data.datasets[0].data.shift()
     myGyroChart.data.datasets[0].data.push(xg)
 
-    yg=value.getFloat32(52 + 12*i,true)
+    yg=value.getFloat32(52 + 12*i,true)//52//48
     console.log('yg = ' + yg)
     myGyroChart.data.datasets[1].data.shift()
     myGyroChart.data.datasets[1].data.push(yg)
 
-    zg=value.getFloat32(56 + 12*i,true)
+    zg=value.getFloat32(56 + 12*i,true)//56//52
     console.log('zg = ' + zg)
     myGyroChart.data.datasets[2].data.shift()
     myGyroChart.data.datasets[2].data.push(zg)
@@ -391,7 +446,7 @@ function handleCharacteristicValueChanged(event) {
     myMagChart.update()
 
   }
-  
+
   samples+=1;
   // Convert raw data bytes to hex values just for the sake of showing something.
   // In the "real" world, you'd use data.getUint8, data.getUint16 or even

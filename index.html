@@ -5,35 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="styles.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-
 </head>
 <body>
-<div id="top_row" class="container">
+<div id="container_1" class="container" style="width: 45%; height: 350px; display:inline-block">
     <div id="accel" class="accValues">
-        <canvas id="accChart" ></canvas>
-    </div>
-    <div id="gyro" class="gyroValues">
+        <canvas id="accChart" width="200px" ></canvas>
+	</div>
+</div>
+<div id="container_2" class="container" style="width: 45%; height: 350px; display:inline-block">
+	<div id="gyro" class="gyroValues">
         <canvas id="gyroChart" ></canvas>
     </div>
+</div>
+<div id="container_3" class="container" style="width: 45%; height: 350px; display:inline-block">
 	<div id="mag" class="magValues">
         <canvas id="magChart" ></canvas>
+    </div>
+</div>
+<div id="container_4" class="container" style="width: 45%; height: 350px; display:inline-block">
+	<div id="force" class="forceValues">
+        <canvas id="forceChart" ></canvas>
     </div>
 </div>
 <button id="connect" type="button">Connect</button>
 
 <button id="disconnect" type="button">Disconnect</button>
-
 <div id="terminal">
-    <div>Device connection...</div>
-    <div class="out">Outcoming message</div>
-    <div class="in">Incoming message</div>
+	<div>Device connection...</div>
+	<div class="out">Outcoming message</div>
+	<div class="in">Incoming message</div>
 </div>
 
 <form id="send-form">
-    <input id="input" type="text">
-    <button type="submit">Send</button>
+	<input id="input" type="text">
+	<button type="submit">Send</button>
 </form>
-
 
 
 <script src="main.js"></script>
