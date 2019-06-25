@@ -6,7 +6,7 @@ let xlabel=[];
 let TimeStart=Date.now();
 let TimeEnd=Date.now();
 
-(arr = []).length = secondsToShow*fs-1; arr.fill(0); //Isto resulta num array de tamanho 35 com zeros right?
+(arr = []).length = secondsToShow*fs-1; arr.fill(0);
 (arr1 = []).length = secondsToShow*fs-1; arr1.fill(0);
 (arr2 = []).length = secondsToShow*fs-1; arr2.fill(0);
 
@@ -18,15 +18,12 @@ let TimeEnd=Date.now();
 (arr7 = []).length = secondsToShow*fs-1; arr7.fill(0);
 (arr8 = []).length = secondsToShow*fs-1; arr8.fill(0);
 
-/*
-console.log('arr = ' + arr)
-console.log('arr1 = ' + arr1)
-console.log('arr2 = ' + arr2)
-*/
+(arr9 = []).length = secondsToShow*fs-1; arr9.fill(0);
+(arr10 = []).length = secondsToShow*fs-1; arr10.fill(0);
 
 j=0
 for (i = 0; i < secondsToShow*fs-1; i++){
-  if (i%35==0){ //perguntar o porquê do 249, com fs=8 deveria ser 79 (tamanho de arr[]) right?
+  if (i%119==0){ //perguntar o porquê do 249, com fs=8 deveria ser 79 (tamanho de arr[]) right?
     xlabel.push(j.toString()) 
     j+=1
   }
@@ -34,8 +31,6 @@ for (i = 0; i < secondsToShow*fs-1; i++){
     xlabel.push("")
   }
 }
-//console.log('xlabel = ' + xlabel) //xlabel é um array com os índices das novas amostras??
-
 
 var ctx = document.getElementById('accChart').getContext('2d');
 var myLineChart = new Chart(ctx, {
@@ -74,11 +69,19 @@ var myLineChart = new Chart(ctx, {
     },
     scales: {
       xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Time (s)'
+          },
           gridLines: {
               display:false
           }
       }],
       yAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Acceleration (g)'
+          },
           gridLines: {
               display:false
           },
@@ -129,11 +132,19 @@ var myGyroChart = new Chart(cgyrox, {
     },
     scales: {
       xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Time (s)'
+          },
           gridLines: {
               display:false
           }
       }],
       yAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Angular rotation (dps)'
+          },
           gridLines: {
               display:false
           },
@@ -184,11 +195,19 @@ var myMagChart = new Chart(cmagx, {
     },
     scales: {
       xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Time (s)'
+          },
           gridLines: {
               display:false
           }
       }],
       yAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Magnetic field intensity (uT)'
+          },
           gridLines: {
               display:false
           },
@@ -208,21 +227,15 @@ var myForceChart = new Chart(cforcex, {
   data: {
     labels: xlabel,
     datasets: [{ 
-        label: 'x axis',
-        data: arr6, //arr,
+        label: 'Small sensor',
+        data: arr9, //arr,
         borderColor: "#3e95cd",
         fill: false,
       },
       {
-        label: 'y axis',
-        data: arr7, //arr1,
+        label: 'Big sensor',
+        data: arr10, //arr1,
         borderColor: "#ef0d09",
-        fill: false
-      },
-      {
-        label: 'z axis',
-        data: arr8, //arr2,
-        borderColor: "#167a09",
         fill: false
       }
     ]
@@ -230,7 +243,7 @@ var myForceChart = new Chart(cforcex, {
   options: {
     title: {
       display: true,
-      text: 'Force'
+      text: 'Force Sensors'
     },
     elements: {
       point:{
@@ -239,11 +252,19 @@ var myForceChart = new Chart(cforcex, {
     },
     scales: {
       xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Time (s)'
+          },
           gridLines: {
               display:false
           }
       }],
       yAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Force intensity (mV)'
+          },
           gridLines: {
               display:false
           },
@@ -445,6 +466,16 @@ function handleCharacteristicValueChanged(event) {
     myMagChart.data.datasets[2].data.push(zm)
     myMagChart.update()
 
+    sf=value.getFloat32(144 + 4*i,true)
+    console.log('sf = ' + sf)
+    myForceChart.data.datasets[0].data.shift()
+    myForceChart.data.datasets[0].data.push(sf)
+  
+    bf=value.getFloat32(160 + 4*i,true)
+    console.log('bf = ' + bf)
+    myForceChart.data.datasets[1].data.shift()
+    myForceChart.data.datasets[1].data.push(bf)
+    myForceChart.update()
   }
 
   samples+=1;
